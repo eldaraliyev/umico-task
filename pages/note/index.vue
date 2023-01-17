@@ -34,53 +34,14 @@
           />
         </div>
         <ul id="todos" class="mb-4">
-          <li
+          <NoteTask
             v-for="(todo, i) in note.todos"
             :key="todo.id"
-            class="shadow-soft rounded mt-4 py-2 px-4"
-          >
-            <div
-              class="flex justify-between flex-col md:flex-row gap-4 md:gap-0"
-            >
-              <div class="flex items-center flex-grow px-2">
-                <input
-                  class="w-[20px] h-[20px] mr-3"
-                  type="checkbox"
-                  name="complete"
-                  id="complete"
-                  v-model="note.todos[i].completed"
-                />
-                <h3
-                  v-if="!todoInput"
-                  id="todo-title"
-                  class="font-light px-3"
-                  :class="{ 'line-through': note.todos[i].completed }"
-                  @click="todoInput = !todoInput"
-                >
-                  {{ note.todos[i].text || 'Click to edit Todo' }}
-                </h3>
-                <input
-                  v-else
-                  id="todo-title-input"
-                  class="w-full h-[32px] font-light bg-primary btn-active-shadow outline-none rounded-md px-3"
-                  type="text"
-                  v-model="note.todos[i].text"
-                />
-              </div>
-              <div class="flex gap-2">
-                <AppButton
-                  class="text-primary"
-                  :title="todoInput ? 'Save' : 'Edit'"
-                  @click="todoInput = !todoInput"
-                />
-                <AppButton
-                  class="text-danger"
-                  title="Delete"
-                  @click="removeTodo(note.todos[i].id)"
-                />
-              </div>
-            </div>
-          </li>
+            :todo="todo"
+            @check="todo.completed = !todo.completed"
+            @input="updateText($event, i)"
+            @detete="removeTodo(todo.id)"
+          ></NoteTask>
         </ul>
         <AppButton class="mb-2" title="Add Todo" @click="addTodo" />
       </AppCard>
@@ -127,14 +88,16 @@
 </template>
 
 <script>
-import { reactive, ref, watch, toRef } from 'vue'
+import { reactive, ref } from 'vue'
 import AppButton from '~/components/App/AppButton.vue'
 import AppCard from '~/components/App/AppCard.vue'
 import { useNotesStore } from '~/store/notesStore'
 import { useRouter } from '@nuxtjs/composition-api'
 import { useRefHistory } from '@vueuse/core'
+import NoteTask from '~/components/Notes/NoteTask.vue'
 
 export default {
+  components: { NoteTask },
   setup() {
     const store = useNotesStore()
     const router = useRouter()
@@ -160,7 +123,7 @@ export default {
       todos: [],
     })
 
-    const { undo, redo, canUndo, canRedo, clear } = useRefHistory(note, {
+    const { undo, redo, canUndo, canRedo } = useRefHistory(note, {
       deep: true,
     })
 
@@ -177,20 +140,9 @@ export default {
       })
     }
 
-    const todoInput = ref(false)
-    if (process.client) {
-      document.addEventListener('click', (e) => {
-        console.log(e.target.id);
-        // if (
-        //   todoInput.value &&
-        //   e.target.id !== 'todo-title-input' &&
-        //   e.target.id !== 'todo-title'
-        // ) {
-        //   todoInput.value = false
-        // }
-      })
+    function updateText(e, index) {
+      note.value.todos[index].text = e
     }
-
     function addTodo() {
       note.value.todos.push({
         ...todo,
@@ -226,8 +178,8 @@ export default {
       toggleDeleteModal,
       todo,
       note,
+      updateText,
       titleInput,
-      todoInput,
       addTodo,
       removeTodo,
       addNote,

@@ -149,18 +149,7 @@ export default {
         }
       })
     }
-    const todoInput = ref(false)
-    if (process.client) {
-      document.addEventListener('click', (e) => {
-        if (
-          todoInput.value &&
-          e.target.id !== 'todo-title-input' &&
-          e.target.id !== 'todo-title'
-        ) {
-          todoInput.value = false
-        }
-      })
-    }
+    
     function updateText(e, index) {
       note.value.todos[index].text = e
     }
@@ -197,7 +186,6 @@ export default {
       todo,
       note,
       titleInput,
-      todoInput,
       addTodo,
       removeTodo,
       editNote,
