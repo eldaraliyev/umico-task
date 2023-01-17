@@ -180,13 +180,14 @@ export default {
     const todoInput = ref(false)
     if (process.client) {
       document.addEventListener('click', (e) => {
-        if (
-          todoInput.value &&
-          e.target.id !== 'todo-title-input' &&
-          e.target.id !== 'todo-title'
-        ) {
-          todoInput.value = false
-        }
+        console.log(e.target.id);
+        // if (
+        //   todoInput.value &&
+        //   e.target.id !== 'todo-title-input' &&
+        //   e.target.id !== 'todo-title'
+        // ) {
+        //   todoInput.value = false
+        // }
       })
     }
 
