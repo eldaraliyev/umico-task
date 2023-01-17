@@ -12,6 +12,7 @@ export const useNotesStore = defineStore('notes', () => {
 
   function fetchNotes() {
     if (process.client) {
+      if (!localStorage.notes) localStorage.setItem('notes', '[]') 
       const lsNotes = JSON.parse(localStorage.notes)
       notes.value = lsNotes
     }
